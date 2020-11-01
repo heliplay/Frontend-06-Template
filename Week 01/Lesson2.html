@@ -1,0 +1,90 @@
+<!--
+    红绿灯问题
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .light {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+            background: gray;
+            margin: 40px;
+        }
+
+        .light.light-on {
+            background: white;
+        }
+
+        .light.light-on.light-green {
+            background: green;
+        }
+
+        .light.light-on.light-yellow {
+            background: yellow;
+        }
+
+        .light.light-on.light-red {
+            background: red;
+        }
+    </style>
+
+    <div>
+        <div class="light light-green"></div>
+        <div class="light light-yellow"></div>
+        <div class="light light-red"></div>
+    </div>
+
+    <script>
+
+
+        function switchLight(lightClass) {
+            let ligths = document.getElementsByClassName('light');
+            for (let i = 0; i < ligths.length; i++) {
+                ligths[i].classList.remove('light-on');
+            }
+            document.getElementsByClassName(lightClass)[0].classList.add('light-on');
+        }
+        function green() {
+            switchLight('light-green');
+        }
+        function yellow() {
+            switchLight('light-yellow');
+        }
+        function red() {
+            switchLight('light-red');
+        }
+
+        function sleep(timeout) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve();
+                }, timeout);
+            })
+        }
+
+        async function app() {
+            while (1) {
+                green();
+                await sleep(10000);
+                yellow();
+                await sleep(2000);
+                red();
+                await sleep(5000);
+            }
+        }
+        app();
+    </script>
+
+</body>
+
+</html>

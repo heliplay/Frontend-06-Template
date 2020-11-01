@@ -1,0 +1,200 @@
+<!--
+    TicTacToe小游戏
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .cell {
+            width: 100px;
+            height: 100px;
+            border: 1px solid white;
+            background: greenyellow;
+            display: inline-block;
+            box-sizing: border-box;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 100px;
+            font-size: 50px;
+        }
+    </style>
+    <div id="board"></div>
+    <script>
+        // 棋盘
+        const pattern = [
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0]
+        ];
+        const SIZE = 3;
+
+        // 当前手 1：o，2：x
+        let color = 1;
+
+        // 棋盘符号
+        const signMap = {
+            0: ' ',
+            1: '⭕️',
+            2: '❌'
+        };
+
+        // 更新和展示棋盘，所有的棋盘点坐标使用数组下标代替（rowIdx,colIDX），以下同
+        function show() {
+            let board = document.getElementById('board');
+            board.innerHTML = '';
+
+            for (let i = 0; i < pattern.length; i++) {
+                const row = pattern[i];
+                for (let j = 0; j < row.length; j++) {
+                    let cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.innerText = signMap[row[j]];
+                    cell.addEventListener('click', function () {
+                        move(i, j, color);
+                    });
+
+                    board.appendChild(cell);
+                }
+                board.appendChild(document.createElement('br'));
+            }
+        }
+
+        // 落子
+        function move(i, j) {
+            pattern[i][j] = color;
+            if (check(pattern, color)) {
+                alert(`${signMap[color]} is  winner`);
+            };
+
+            show();
+            if (willWin(pattern, color)) {
+                console.log(signMap[color] + 'will win');
+            }
+            color = 3 - color;
+
+            // AI判断
+            console.log('AI:\n');
+            console.log(bestChoice(pattern, color));
+        }
+
+        // 检查输赢
+        function check(pattern, color) {
+            for (let i = 0; i < SIZE; i++) {
+                let isWin = true;
+                for (let j = 0; j < SIZE; j++) {
+                    if (pattern[i][j] !== color) {
+                        isWin = false;
+                    }
+                }
+                if (isWin) {
+                    return true;
+                }
+            }
+
+            for (let i = 0; i < SIZE; i++) {
+                let isWin = true;
+                for (let j = 0; j < SIZE; j++) {
+                    if (pattern[j][i] !== color) {
+                        isWin = false;
+                    }
+                }
+                if (isWin) {
+                    return true;
+                }
+            }
+
+            {
+                let isWin = true;
+                for (let i = 0; i < SIZE; i++) {
+                    if (pattern[i][i] !== color) {
+                        isWin = false;
+                    }
+                }
+                if (isWin) {
+                    return true;
+                }
+            }
+
+            {
+                let isWin = true;
+                for (let i = 0; i < SIZE; i++) {
+                    if (pattern[i][SIZE - i - 1] !== color) {
+                        isWin = false;
+                    }
+                }
+                if (isWin) {
+                    return true;
+                }
+            }
+        }
+
+        // 预测
+        function willWin(pattern, color) {
+            for (let i = 0; i < SIZE; i++) {
+                for (let j = 0; j < SIZE; j++) {
+                    if (pattern[i][j] === 0) {
+                        let patternClone = clone(pattern);
+                        patternClone[i][j] = color;
+                        if (check(patternClone, color)) {
+                            return [i, j];
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        // 简单AI
+        function bestChoice(pattern, color) {
+            let p1 = willWin(pattern, color);
+            if (p1) {
+                return {
+                    point: p1,
+                    result: 1
+                };
+            }
+            let result = -2;
+            let point = null;
+            for (let i = 0; i < SIZE; i++) {
+                for (let j = 0; j < SIZE; j++) {
+                    if (pattern[i][j] === 0) {
+                        let patternClone = clone(pattern);
+                        patternClone[i][j] = color;
+                        let r = bestChoice(patternClone, 3 - color).result;
+                        if (-r > result) {
+                            point = [i, j];
+                            result = -r;
+                        }
+                    }
+                }
+            }
+            return {
+                point: point,
+                result: point ? 1 : 0
+            };
+        }
+
+        // 棋盘复制
+        function clone(pattern) {
+            return JSON.parse(JSON.stringify(pattern));
+        }
+
+
+
+        show(pattern, color);
+
+        // AI判断
+        console.log('AI:\n');
+        console.log(bestChoice(pattern, color));
+
+    </script>
+</body>
+
+</html>
