@@ -1,0 +1,187 @@
+<!-- Expression -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\*)|(\/)|(\+)|(\-)/g;
+
+        let dictnary = ['Number', 'WhiteSpace', 'LineTerminator', '*', '/', '+', '-'];
+
+        function * tokenize (source) {
+            let result = null;
+            let lastIndex = 0;
+            while (true) {
+                lastIndex = regexp.lastIndex;
+                result = regexp.exec(source);
+        
+                if (!result) {
+                    break;
+                }
+        
+                if (regexp.lastIndex - lastIndex > result[0].length) {
+                    throw new Error();
+                }
+        
+                let token = {
+                    type: null,
+                    value: null
+                };
+        
+                for (let i = 1; i <= dictnary.length; i++) {
+                    if (result[i]) {
+                        token.type = dictnary[i - 1];
+                    }
+                }
+        
+                token.value = result[0];
+        
+                yield token;
+            }
+        
+            yield {
+                type: 'EOF'
+            };
+        }
+
+        // experssion
+        function Expression (source) {
+            if (source[0].type === 'AdditiveExpression' && source[1].type === 'EOF') {
+                let node = {
+                    type: 'Expression',
+                    children: [source.shift(), source.shift()]
+                };
+                source.unshift(node);
+                return node;
+            }
+            AdditiveExpression(source);
+            return Expression(source);
+        }
+
+        function AdditiveExpression (source) {
+            if (source[0].type === 'MultiplecativeExpression') {
+                let node = {
+                    type: 'AdditiveExpression',
+                    children: source[0]
+                };
+                source[0] = node;
+                return AdditiveExpression(source);
+            }
+            if (source[0].type === 'Number') {
+                let node = {
+                    type: 'AdditiveExpression',
+                    children: source[0]
+                };
+                source[0] = node;
+                return AdditiveExpression(source);
+            }
+        
+            // 加法两个加数、+号
+            if (source[0].type === 'AdditiveExpression' && source[1].type === '+') {
+                let node = {
+                    type: 'AdditiveExpression',
+                    operator: '+',
+                    children: []
+                };
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+        
+                MultiplecativeExpression(source);
+                node.children.push(source.shift());
+        
+                source.unshift(node);
+                return AdditiveExpression(source);
+            }
+        
+            // 除法被减数、减号、减数
+            if (source[0].type === 'AdditiveExpression' && source[1].type === '-') {
+                let node = {
+                    type: 'AdditiveExpression',
+                    operator: '-',
+                    children: []
+                };
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+        
+                MultiplecativeExpression(source);
+                node.children.push(source.shift());
+        
+                source.unshift(node);
+                return AdditiveExpression(source);
+            }
+        
+            if (source[0].type === 'AdditiveExpression') {
+                return source[0];
+            }
+
+            MultiplecativeExpression(source);
+            return AdditiveExpression(source);
+        }
+        
+        // 乘性
+        function MultiplecativeExpression (source) {
+            if (source[0].type === 'Number') {
+                let node = {
+                    type: 'MultiplecativeExpression',
+                    children: source[0]
+                };
+                source[0] = node;
+                return MultiplecativeExpression(source);
+            }
+        
+            // 乘法两个乘数、乘号
+            if (source[0].type === 'MultiplecativeExpression' && source[1].type === '*') {
+                let node = {
+                    type: 'MultiplecativeExpression',
+                    operator: '*',
+                    children: []
+                };
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                source.unshift(node);
+                return MultiplecativeExpression(source);
+            }
+        
+            // 除法被除数、除号、除数
+            if (source[0].type === 'MultiplecativeExpression' && source[1].type === '/') {
+                let node = {
+                    type: 'MultiplecativeExpression',
+                    operator: '/',
+                    children: []
+                };
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                node.children.push(source.shift());
+                source.unshift(node);
+                return MultiplecativeExpression(source);
+            }
+        
+            if (source[0].type === 'MultiplecativeExpression') {
+                return source[0];
+            }
+
+            // 理论上不会触发
+            return MultiplecativeExpression(source);
+        }
+        
+        // let expStr = '10 * 25 / 2';
+        let expStr = '1 + 2 + 3*5 + 9';
+
+        let source = [];
+
+        for (const token of tokenize(expStr)) {
+            if (token.type !== 'WhiteSpace' && token.type !== 'LineTerminator') {
+                source.push(token);
+            }
+        }
+
+        console.log(Expression(source));
+    </script>
+    
+</body>
+</html>
