@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trie</title>
+</head>
+<body>
+    <script>
+        let $ = Symbol('$');
+        class Trie {
+            constructor () {
+                this.root = Object.create(null);
+            }
+
+            insert (word) {
+                let node = this.root;
+                for (let i = 0; i < word.length; i++) {
+                    let l = word[i];
+                    if (!(l in node)) {
+                        node[l] = Object.create(null);
+                    }
+                    node = node[l];
+                }
+        
+                if (!($ in node)) {
+                    node[$] = 0;
+                }
+                node[$]++;
+            }
+
+            most () {
+                let maxWordList = [];
+                let max = 0;
+                let loop = function (node, word) {
+                    if (node[$]) {
+                        if (node[$] > max) {
+                            max = node[$];
+                            maxWordList = [word];
+                        } else if (node[$] === max) {
+                            maxWordList.push(word);
+                        }
+                    }
+                    for (const i in node) {
+                        loop(node[i], word + i);
+                    }
+                };
+                loop(this.root, '');
+                console.log(max);
+                console.log(maxWordList);
+            }
+        }
+
+        function randomWord (length) {
+            let s = '';
+            for (let i = 0; i < length; i++) {
+                s += String.fromCharCode(Math.random() * 26 + ('a'.charCodeAt(0)));
+            }
+            return s;
+        }
+
+        let trie = new Trie();
+        for (let i = 0; i < 100003; i++) {
+            trie.insert(randomWord(4));
+        }
+        trie.most();
+        </script>
+</body>
+</html>

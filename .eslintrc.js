@@ -19,7 +19,8 @@ module.exports = {
             // destructuring: 'any',
             // ignoreReadBeforeAssign: false
         }],
-        'no-unused-vars': ['warn']
+        'no-unused-vars': ['warn'],
+        'no-lone-blocks': 'off'
     },
     plugins: [
         'html'
