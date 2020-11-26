@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单层reactive</title>
+</head>
+<body>
+    <script>
+        let object = {
+            a: 1,
+            b: 2
+        };
+
+        let callbacks = new Map();
+        
+        let usedReactivities = [];
+
+        let po = reactive(object);
+        effect(() => {
+            console.log(po.a);
+        });
+        
+        function effect (callback) {
+            callbacks.push(callback);
+            usedReactivities.length = 0;
+            callback();
+            for (const reactivity of usedReactivities) {
+                if (!callbacks.has[reactivity[0]]) {
+                    callbacks.set(reactivity[0], new Map());
+                }
+                if (!callbacks.get[reactivity[0]].has[reactivity[1]]) {
+                    callbacks.get(reactivity[0]).set(reactivity[1], []);
+                }
+                callbacks.get(reactivity[0]).get(reactivity[0]).push(callback);
+            }
+        }
+
+        function reactive (object) {
+            return new Proxy(object, {
+                set (obj, prop, val) {
+                    obj[prop] = val;
+
+                    // 回调使用
+                    if (callbacks.get(obj)) {
+                        if (callbacks.get[prop]) {
+                            for (const callback of callbacks.get(obj).get(prop)) {
+                                callback();
+                            }
+                        }
+                    }
+                    return obj[prop];
+                },
+                get (obj, prop) {
+                    usedReactivities.push([obj, prop]);
+                    return obj[prop];
+                }
+        
+            });
+        }
+    </script>
+</body>
+</html>
