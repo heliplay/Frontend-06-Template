@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNF</title>
+</head>
+<body>
+    <xmp>
+        <!-- 重新定义了乘性表达式 -->
+        <MultiplicativeExpression>::=
+            <Number>|
+            <MultiplicativeExpression> "*" <Number>|
+            <MultiplicativeExpression> "/" <Number>|
+            <PrioritizedExpression>|
+            <MultiplicativeExpression> "*" <PrioritizedExpression>|
+            <MultiplicativeExpression> "/" <PrioritizedExpression>
+
+        <!-- 加性表达式不变  -->
+        <AdditiveExpression>::=<MultiplicativeExpression>|
+            <MultiplicativeExpression> "+" <Number>|
+            <MultiplicativeExpression> "-" <Number>
+                
+        <!-- 括号优先表达式 -->
+        <PrioritizedExpression>::="("<AdditiveExpression>")"
+    </xmp>
+    
+</body>
+</html>
