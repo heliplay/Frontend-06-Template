@@ -1,1 +1,155 @@
-学习笔记
+# 学习笔记
+
+## 本周知识清单
+
+* 语言按照语法分类 & 文法
+* 产生式
+* 图灵机
+* 编程语言特性
+  * 需要实现图灵完备性（可计算性）
+    * 命令式
+    * 声明式
+  * 动态、静态
+  * 强类型、弱类型
+  * 复合类型
+    * 结构体
+    * 函数签名
+  * 子类型
+  * 泛型
+    * 协变/逆变
+* 语言分类
+  * 编程语言世代
+    * 机器语言
+      * 通过面板、打孔带或者打孔卡输入
+    * 汇编语言
+      * 8086汇编
+      * Win32汇编
+      * NET的汇编
+    * 高级语言（面向操作系统）
+      * 机器语言、汇编语言之外的基本都是高级语言
+    * 用途
+    * 数据描述语言
+      * JSON
+      * HTML
+      * XAML
+      * CSS
+      * SQL
+    * 编程语言
+      * Javascript
+      * Java
+      * C#
+      * Ruby
+      * etc
+  * 表达方式
+    * 声明式
+      * JSON
+      * HTML
+      * XAML
+      * CSS
+      * SQL
+      * Lisp
+      * Haskell
+      * Clojure
+      * 正则表达式
+    * 命令式
+      * Javascript
+      * Java
+      * PHP
+      * Python
+      * Rust
+  * 动态静态
+    * 动态语言
+      * 特点
+      * 用户机器
+      * 动态语言是在运行时确定数据类型的语言
+      * 可以在用户机器获取类型信息
+      * runtime
+      * eg
+      * Javascript
+      * PHP
+      * Python
+      * Ruby
+    * 静态语言
+      * 特点
+      * 程序员机器
+      * 静态语言是在编译时变量的数据类型即可确定的语言
+      * 仅在程序员机器获取类型信息，编译后类型信息抹掉
+      * compiletime
+      * eg
+      * Go
+      * Rust
+      * Swift
+      * Java
+      * C
+      * C++
+  * 类型强弱
+    * 弱类型：有隐式类型转换
+      * Javascript
+      * PHP
+      * C
+      * C++
+    * 强类型：无隐式类型转换
+      * Java
+      * Python
+      * Ruby
+      * Rust
+      * Go
+      * Swift
+      * Dart
+  * 运行方式
+    * 编译
+      * C
+      * C++
+      * C#
+      * Go
+      * Rust
+      * Java
+      * Swift
+    * 解释
+      * Javacript
+      * Java
+      * PHP
+      * Python
+      * Ruby
+      * Shell
+      * MATLAB
+      * Dart
+  * 脚本语言
+    * Javascript
+    * Ruby
+    * AppleScript
+    * Shell
+  * 标记编程语言
+    * HTML
+    * XML
+    * XHTML
+    * Curl
+* js Number类型
+* IEEE754 double float
+* js String类型
+  * 字符
+  * 字符集
+  * 码点
+  * 编码方式
+  * 实现UTF-8
+
+* 对象
+  * Class Based
+    * 归类
+    * 分类
+  * Prototype Based
+  * js的对象的使用
+    * 字面量
+    * 基于prototype的方式
+    * 基于class的方式
+    * 基于function & prototype
+  * js对象的分类
+    * host对象
+    * 固有对象
+    * 原生对象
+    * 代码定义对象
+  * 函数对象
+    * [[call]]
+    * [[construct]]
+  * 特殊对象
+  
