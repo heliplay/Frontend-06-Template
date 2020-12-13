@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>realm</title>
+</head>
+<body>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.7.1/dist/g6.min.js"></script>
+
+    <div id="graphContainer"></div>
+    <script>
+        let set = new Set();
+        let objects = [
+            eval,
+            isFinite,
+            isNaN,
+            parseFloat,
+            parseInt,
+            decodeURI,
+            decodeURIComponent,
+            encodeURI,
+            encodeURIComponent,
+            Array,
+            Date,
+            RegExp,
+            Promise,
+            Proxy,
+            Map,
+            WeakMap,
+            Set,
+            WeakSet,
+            Function,
+            Boolean,
+            String,
+            Number,
+            Symbol,
+            Object,
+            Error,
+            EvalError,
+            RangeError,
+            ReferenceError,
+            SyntaxError,
+            TypeError,
+            URIError,
+            ArrayBuffer,
+            SharedArrayBuffer,
+            DataView,
+            Float32Array,
+            Float64Array,
+            Int8Array,
+            Int16Array,
+            Int32Array,
+            Uint8Array,
+            Uint16Array,
+            Uint32Array,
+            Uint8ClampedArray,
+            Atomics,
+            JSON,
+            Math,
+            Reflect
+        ];
+
+        const REALM = { name: 'realm' };
+        let mapMember = new Map();
+        mapMember.set(REALM, {
+            nameChain: 'realm',
+            name: 'realm',
+            children: []
+        });
+
+        objects.forEach(o => {
+            set.add(o);
+        
+            mapMember.get(REALM).children.push(o);
+        
+            mapMember.set(o, {
+                nameChain: 'realm' + '.' + getName(o),
+                name: getName(o),
+                children: []
+            });
+        });
+        set.add(REALM);
+
+        for (let i = 0; i < objects.length; i++) {
+            let o = objects[i];
+            for (let p of Object.getOwnPropertyNames(o)) {
+                let d = Object.getOwnPropertyDescriptor(o, p);
+                if ((d.value !== null && typeof d.value === 'object') || (typeof d.value === 'function')) {
+                    mapMember.get(o).children.push(d.value);
+        
+                    if (!set.has(d.value)) {
+                        set.add(d.value);
+                        objects.push(d.value);
+
+                        mapMember.set(d.value, {
+                            nameChain: mapMember.get(o).nameChain + '.' + p,
+                            name: p,
+                            children: []
+                        });
+                    }
+                }
+                if (d.get) {
+                    mapMember.get(o).children.push(d.get);
+
+                    if (!set.has(d.get)) {
+                        set.add(d.get);
+                        objects.push(d.get);
+
+                        mapMember.set(d.get, {
+                            nameChain: mapMember.get(o).nameChain + '.' + p,
+                            name: p,
+                            children: []
+                        });
+                    }
+                }
+                if (d.set) {
+                    mapMember.get(o).children.push(d.set);
+
+                    if (!set.has(d.set)) {
+                        set.add(d.set);
+                        objects.push(d.set);
+
+                        mapMember.set(d.set, {
+                            nameChain: mapMember.get(o).nameChain + '.' + p,
+                            p,
+                            children: []
+                        });
+                    }
+                }
+            }
+        }
+
+        let nodes = [];
+        let edges = [];
+
+        for (const node of set.values()) {
+            let o = mapMember.get(node);
+            nodes.push({
+                id: o.nameChain,
+                label: o.name
+            });
+        }
+
+        for (const parent of mapMember.values()) {
+            for (let i = 0; i < parent.children.length; i++) {
+                const child = mapMember.get(parent.children[i]);
+                edges.push({
+                    source: parent.nameChain,
+                    target: child.nameChain,
+                    type: 'cubic-horizontal'
+                });
+            }
+        }
+        
+        console.log(nodes);
+
+        // eslint-disable-next-line
+        const grid = new G6.Grid();
+        // eslint-disable-next-line
+        const graph = new G6.Graph({
+            container: 'graphContainer',
+            width: 2000,
+            height: 2000,
+            modes: {
+            // 支持的 behavior
+                default: ['drag-canvas', 'zoom-canvas'],
+                edit: ['click-select']
+            },
+            layout: {
+                type: 'dagre',
+                rankdir: 'LR', // 可选，默认为图的中心
+                align: 'DL', // 可选
+                nodesep: 5, // 可选
+                ranksep: 200, // 可选
+                controlPoints: true, // 可选
+                sortByCombo: true
+            },
+            plugins: []
+        });
+        
+        graph.data({
+            nodes,
+            edges
+        }); // 读取 Step 2 中的数据源到图上
+        graph.render();
+        graph.fitView();
+
+        function getName (o) {
+            if (o.name) {
+                return o.name;
+            } else {
+                let regExp = / (\S+)\]$/g;
+                let name = Object.prototype.toString.call(o);
+                return regExp.exec(name)[1];
+            }
+        }
+    </script>
+</body>
+</html>

@@ -20,7 +20,8 @@ module.exports = {
             // ignoreReadBeforeAssign: false
         }],
         'no-unused-vars': ['warn'],
-        'no-lone-blocks': 'off'
+        'no-lone-blocks': 'off',
+        'no-eval': 'off'
     },
     plugins: [
         'html'
