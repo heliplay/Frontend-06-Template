@@ -39,7 +39,7 @@ class Request {
             connection.on('data', (data) => {
                 parser.recieve(data.toString());
                 if (parser.isFinished) {
-                    resolve(parser.string);
+                    resolve(parser.response);
                     connection.end();
                 }
             });
@@ -57,6 +57,7 @@ ${Object.keys(this.headers).map(key => `${key}: ${this.headers[key]}`).join('\r\
 ${this.bodyText}`;
     }
 }
+
 class ResponseParser {
     constructor () { // 此处状态机的写法：分支（不如函数方式）
         this.WAITING_STATUS_LINE = 0;
@@ -81,6 +82,7 @@ class ResponseParser {
         for (let i = 0; i < string.length; i++) {
             this.recieveChar(string.charAt(i));
         }
+        console.log('x');
     }
 
     recieveChar (char) {
@@ -99,7 +101,7 @@ class ResponseParser {
                 this.current = this.WAITING_HEADER_SPACE;
             } else if (char === '\r') { // 一个空行，等待整个头部状态结束
                 this.current = this.WAITING_HEADER_BLOCK_END;
-                if (this.headers['Transfer-Encoding'] === 'chunk') { // 只写一个例子
+                if (this.headers['Transfer-Encoding'] === 'chunked') { // 只写一个例子
                     this.bodyParser = new TrunkEDBodyParser();
                 }
             } else {
@@ -128,8 +130,6 @@ class ResponseParser {
             }
         } else if (this.current === this.WAITING_BODY) {
             this.bodyParser.recieveChar(char);
-            console.log('####');
-            console.log(char);
         }
     }
 
@@ -141,7 +141,7 @@ class ResponseParser {
         this.statusLine.match(/HTTP\/1.1 ([0-9]+) ([\S\s]+)/);
         return {
             statusCode: RegExp.$1,
-            statusText: RegExp.$2Í,
+            statusText: RegExp.$2,
             headers: this.headers,
             body: this.bodyParser.content.join('')
         };
@@ -177,22 +177,24 @@ class TrunkEDBodyParser {
                 this.length += parseInt(char, 16);
             }
         } else if (this.current === this.WAITING_LENGTH_LINE_END) {
-            if (char === '\r') {
+            if (char === '\n') {
                 this.current = this.READING_TRUNK;
             }
-        } else if (this.content === this.READING_TRUNK) {
-            this.content.push(char);
+        } else if (this.current === this.READING_TRUNK) {
+            if (this.length > 0) {
+                this.content.push(char);
+            }
             this.length--;
             if (this.length === 0) {
                 this.current = this.WAITING_NEW_LINE;
             }
         } else if (this.current === this.WAITING_NEW_LINE) {
             if (char === '\r') {
-                this.content = this.WAITING_NEW_LINE_END;
+                this.current = this.WAITING_NEW_LINE_END;
             }
         } else if (this.current === this.WAITING_NEW_LINE_END) {
             if (char === '\n') {
-                this.content = this.WAITING_LENGTH;
+                this.current = this.WAITING_LENGTH;
             }
         }
     }
@@ -214,4 +216,5 @@ class TrunkEDBodyParser {
 
     });
     let response = await request.send();
+    console.log(response);
 }());
