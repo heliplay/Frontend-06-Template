@@ -20,6 +20,7 @@ module.exports = {
             // ignoreReadBeforeAssign: false
         }],
         'no-unused-vars': ['warn'],
+        'no-useless-return': ['warn'],
         'no-lone-blocks': 'off',
         'no-eval': 'off'
     },

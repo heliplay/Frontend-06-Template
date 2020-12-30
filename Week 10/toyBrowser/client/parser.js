@@ -1,4 +1,5 @@
 const css = require('css');
+const layout = require('./layout');
 
 const EOF = Symbol('EOF');
 
@@ -139,6 +140,9 @@ function emit (token) {
         if (!token.isSelfClosing) {
             stack.push(element);
         }
+        //  else {
+        //     layout(element);
+        // }
 
         currTextNode = null;
     } else if (token.type === 'endTag') {
@@ -149,6 +153,7 @@ function emit (token) {
             if (top.tagName === 'style') { // 我们只考虑style 不考虑 link
                 addCssRules(top.children[0].content);
             }
+            layout(top);
             stack.pop();
         }
         currTextNode = null;
