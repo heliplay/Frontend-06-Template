@@ -3,7 +3,7 @@
  * @param {string} selector css多级选择器字符串
  */
 function specificity (selector) {
-    let p = [0, 0, 0, 0];
+    let p = [0, 0, 0, 0];// inline,id,class tag
     let selectorParts = selector.split(' ');
     for (const part of selectorParts) {
         let partObj = parsePart(part);
