@@ -1,6 +1,6 @@
 # 学习笔记
 
-1. 盒模型
+1. 盒模型box model
     1. box-sizing
     2. content
     3. padding
