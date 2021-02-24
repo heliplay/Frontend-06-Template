@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev14": "webpack serve --config './Week 14/jsx/webpack.config.js' --open --hot",
-    "build14": "webpack  --config './Week 14/jsx/webpack.config.js' --mode=production"
+    "build14": "webpack  --config './Week 14/jsx/webpack.config.js' --mode=production",
+    "dev15": "webpack serve --config './Week 15/jsx/webpack-guesture.config.js' --open --hot"
   },
   "repository": {
     "type": "git",
